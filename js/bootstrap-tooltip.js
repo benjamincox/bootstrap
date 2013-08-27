@@ -263,10 +263,21 @@
 
   , getPosition: function () {
       var el = this.$element[0]
-      return $.extend({}, (typeof el.getBoundingClientRect == 'function') ? el.getBoundingClientRect() : {
-        width: el.offsetWidth
-      , height: el.offsetHeight
-      }, this.$element.offset())
+        , rectangle
+      if (typeof el.getBoundingClientRect == 'function') {
+        try {
+          rectangle = el.getBoundingClientRect()
+        } catch (ignored) {
+          //IE9 will throw Unspecified Error if the element has been removed, while other browsers just return a zeroed rectangle
+        }
+      }
+      if (rectangle == null) {
+        rectangle = {
+          width: el.offsetWidth
+        , height: el.offsetHeight
+        }
+      }
+      return $.extend({}, rectangle, this.$element.offset())
     }
 
   , getTitle: function () {
